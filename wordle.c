@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-char *wordle(char *file)
+char *wordle(char *file, unsigned int len)
 {
     int date = 0;
     time_t time_raw_format;
@@ -18,7 +18,7 @@ char *wordle(char *file)
     date |= (ptr_time->tm_year & 0xffff) << 16;
 
     srand(date);
-    int num = (rand() % (15918 + 1));
+    int num = (rand() % (len + 1));
     char str[6];
     FILE * pFile = fopen(file, "r");
     fseek(pFile, 7*num, SEEK_SET);
@@ -29,12 +29,12 @@ char *wordle(char *file)
     return strdup(str);
 }
 
-int isWord(char *word, char *file)
+int isWord(char *word, char *file, unsigned int len)
 {
     char str[6];
     FILE * pFile = fopen(file, "r");
     fseek(pFile, 0, SEEK_SET);
-    for(int i = 0; i < 15918; i++){
+    for(int i = 0; i < len; i++){
         fseek(pFile, 7*i, SEEK_SET);
         fgets(str, 6, pFile);
         str[5] = '\0';
@@ -47,9 +47,9 @@ int isWord(char *word, char *file)
 
 int main(int argc, char *argv[])
 {
+    unsigned int len = 15918;
     char *file = "words.csv";
-    char *str = wordle(file);
-
+    char *str = wordle(file, len);
     if(str == NULL){
         fprintf(stderr, "Allocation failed\n");
         exit(1);
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         printf("Provided word is not 5 letters long\n");
         exit(1);
     }
-    if(!isWord(argv[1], file)){
+    if(!isWord(argv[1], file, len)){
         printf("Provided input is not a word\n");
         exit(1);
     }
