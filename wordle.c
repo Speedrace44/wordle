@@ -29,6 +29,22 @@ char *wordle(char *file)
     return strdup(str);
 }
 
+int isWord(char *word, char *file)
+{
+    char str[6];
+    FILE * pFile = fopen(file, "r");
+    fseek(pFile, 0, SEEK_SET);
+    for(int i = 0; i < 15918; i++){
+        fseek(pFile, 7*i, SEEK_SET);
+        fgets(str, 6, pFile);
+        str[5] = '\0';
+        if(strcmp(str, word) == 0){
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     char *file = "words.csv";
@@ -46,6 +62,10 @@ int main(int argc, char *argv[])
 
     if(strlen(argv[1]) != 5){
         printf("Provided word is not 5 letters long\n");
+        exit(1);
+    }
+    if(!isWord(argv[1], file)){
+        printf("Provided input is not a word\n");
         exit(1);
     }
     int correct = 1;
